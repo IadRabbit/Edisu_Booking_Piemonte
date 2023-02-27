@@ -4,6 +4,8 @@ from telegram.ext import ContextTypes
 
 from edisu_api.api_slim import API_SLIM
 
+from settings import STATUS_BOOKING
+
 def check_session(func, *args) -> NoneType | dict:
 	try:
 		return func(*args)
@@ -25,6 +27,7 @@ def check_login(function):
 def gen_photo_caption(booking: dict):
 	caption = (
 		f"Booking ID: {booking['booking_id']}\n"
+		f"Status: {STATUS_BOOKING[booking['booking_status']]}\n"
 		f"Seat No: {booking['seat_no']}\n"
 		f"Date: {booking['date']}\n"
 		f"Study Room: {booking['hall_name']}\n"

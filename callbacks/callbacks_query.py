@@ -10,6 +10,8 @@ from inline_keyboards.slots_time import (
     create_keyboard_end_time
 )
 
+from inline_keyboards.dates import dates_create_keyboard
+
 from inline_keyboards.delete_booking import (
     ask_confirm_delete_booking_create_keyboard,
     delete_booking_create_keyboard
@@ -202,6 +204,14 @@ async def set_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
 		update.callback_query.data.removeprefix('/set_date_')
 	)
 
-	context.user_data['last_book_date'] = datetime.fromtimestamp(date_unix).strftime('%d-%m-%Y')
+	c_date = datetime.fromtimestamp(date_unix)
+	context.user_data['last_book_date'] = c_date.strftime('%d-%m-%Y')
+
+	text = f"Choose the date you prefer\nCurrently: {c_date.strftime('%a')} {c_date.day} {c_date.strftime('%b')}"
+
+	await update.callback_query.message.edit_text(
+		text = text,
+		reply_markup = dates_create_keyboard()
+	)
 
 	await update.callback_query.answer(f"Date set to {context.user_data['last_book_date']}")
