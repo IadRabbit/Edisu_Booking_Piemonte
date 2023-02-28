@@ -27,9 +27,6 @@ def create_keyboard_start_time(
 	user_data: dict,
 	edisu_api_user: API_SLIM
 ):
-	if not 'last_book_date' in user_data:
-		user_data['last_book_date'] = datetime.today().strftime('%d-%m-%Y')
-
 	try:
 		time_slots = edisu_api_user.get_time_slots(
 			study_room, id_study_room, user_data['last_book_date']

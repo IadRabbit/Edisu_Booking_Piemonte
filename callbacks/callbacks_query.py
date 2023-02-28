@@ -48,6 +48,14 @@ async def choose_time_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	context.user_data['last_id_study_room'] = id_study_room
 	context.user_data['last_study_room'] = study_room
 
+	today_date = datetime.today()
+
+	if not 'last_book_date' in context.user_data:
+		context.user_data['last_book_date'] = today_date.strftime('%d-%m-%Y')
+	else:
+		if datetime.strptime(context.user_data['last_book_date'], '%d-%m-%Y') < today_date:
+			context.user_data['last_book_date'] = today_date.strftime('%d-%m-%Y')
+
 	reply_markup = create_keyboard_start_time(
 		study_room, id_study_room,
 		context.user_data, context.chat_data['edisu_session']
@@ -62,7 +70,10 @@ async def choose_time_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 		return ConversationHandler.END
 
 	await update.callback_query.edit_message_text(
-		text = 'Ok you lazy, when you want to start your way to breakdown :)',
+		text = (
+			f"Current date is set for: {context.user_data['last_book_date']}\n"
+			'Ok you lazy, when you want to start your way to breakdown :)'
+		),
 		reply_markup = reply_markup
 	)
 
@@ -156,7 +167,7 @@ async def ask_book_del_confirm(update: Update, context: ContextTypes.DEFAULT_TYP
 	)
 
 	await update.callback_query.edit_message_caption(
-		caption = 'Are you sure ?',
+		caption = f"{update.callback_query.message.caption}\n\nAre you sure ?",
 		reply_markup = ask_confirm_delete_booking_create_keyboard(id_booking)
 	)	
 
@@ -193,8 +204,9 @@ async def del_booking_no(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 	await update.callback_query.answer("I deleted it anyway :))... Kidding")
 
-	await update.callback_query.edit_message_reply_markup(
-		delete_booking_create_keyboard(id_booking)
+	await update.callback_query.edit_message_caption(
+		caption = update.callback_query.message.caption.split('\n\n')[0],
+		reply_markup = delete_booking_create_keyboard(id_booking)
 	)
 
 	return ConversationHandler.END
