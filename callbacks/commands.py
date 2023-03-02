@@ -29,14 +29,17 @@ from .utils import (
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	if context.user_data.get('token'):
 		await update.message.reply_text('Once you start, cannot came back...')
-	
+
 		return ConversationHandler.END
 
 	name = update.effective_user.name
 
-	await update.message.reply_text(
-		f"Hi {name}, welcome to @{BOT_NAME}, before going on you need to login with your EDISU credentials. In case if you don't have an EDISU account press /signup "
-	)
+	if not 'token' in context.user_data:
+		text = f"Hi {name}, welcome to @{BOT_NAME}, before going on you need to login with your EDISU credentials. In case if you don't have an EDISU account press /signup. If your afraid to use your account read /privacy_disclaimer"
+	else:
+		text = 'You still need to login. If your afraid to use your account read /privacy_disclaimer'
+
+	await update.message.reply_text(text)
 
 	sleep(1)
 
@@ -250,10 +253,10 @@ async def privacy_disclaimer_cmd(update: Update, context: ContextTypes.DEFAULT_T
 	await update.message.reply_text(
 		text = (
 			f"This bot is an independent project and NOT affiliated in anyway with edisu-piemonte.it\n"
-			f"In order to make the bot work properly this is gonna save some personal informations as:\n"
-			f"1): Your EDISU session, NO email neither password are saved, they are only used temporarily for login step & then retrive the session 'token' used for booking your seats, which means I can access to your edisu booking account\n"
-			f"2): Other data saved are the last location (if you send me) and last date and time range used for service as /fast_booking or /get_closest_book_room\n"
-			f"3): If you are truther then you are right I am gonna sell all your data to F.B.I. & Megamind. The bot is completely open source so you can see by yourself what it does. More details here /bot_source_info\n"
+			f"In order to make the bot work properly this is gonna save some personal informations as:\n\n"
+			f"1): Your EDISU session, NO email neither password are saved, they are only used temporarily for login step & then retrive the session 'token' used for booking your seats, which means I can access to your edisu booking account\n\n"
+			f"2): Other data saved are the last location (if you send me) and last date and time range used for service as /fast_booking or /get_closest_book_room\n\n"
+			f"3): If you are truther then you are right I am gonna sell all your data to F.B.I. & Megamind. The bot is completely open source so you can see by yourself what it does. More details here /bot_source_info"
 		)
 	)
 
