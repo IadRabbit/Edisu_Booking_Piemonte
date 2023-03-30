@@ -7,6 +7,7 @@ class API:
 
 	def __init__(self) -> None:
 		self.__req = Session()
+		self.__req.verify = 'edisuprenotazioni-edisu-piemonte-it-chain.pem'
 
 		self.__req.headers = {
 			'Origin': self.__ORIGIN,
