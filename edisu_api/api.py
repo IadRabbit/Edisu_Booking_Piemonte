@@ -2,23 +2,20 @@ from requests import Session
 from .exceptions import CannotLogin
 
 class API:
-	__ORIGIN = 'https://edisuprenotazioni.edisu-piemonte.it'
-	__URL_API = f'{__ORIGIN}:8443'
+	__URL_API = 'https://api-edisuprenotazioni.edisu-piemonte.it'
 
 	def __init__(self) -> None:
 		self.__req = Session()
-		self.__req.verify = 'edisuprenotazioni-edisu-piemonte-it-chain.pem'
 
 		self.__req.headers = {
-			'Origin': self.__ORIGIN,
-			'Accept-Language': 'it'
+			'Accept-Language': 'en-US,en;q=0.5'
 		}
 
 	def login(self, email: str, password: str) -> None:
 		res_js = self.login_js_res(email, password)
 
 		if res_js['status'] != 202:
-			raise CannotLogin(res_js['message'])
+			raise CannotLogin(res_js['message'], res_js)
 		
 		self.set_token(res_js['token'])
 
@@ -27,7 +24,7 @@ class API:
 		self.__req.headers['Authorization'] = f"Bearer {self.jwt_token}"
 
 	def login_js_res(self, email: str, password: str) -> dict:
-		path = '/sbs/web/signin'
+		path = '/web/signin'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -42,7 +39,7 @@ class API:
 		return res_js
 	
 	def login_js_res_api_mobile(self, email: str, password: str) -> dict:
-		path = '/sbs/users/signin'
+		path = '/users/signin'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -57,7 +54,7 @@ class API:
 		return res_js
 
 	def get_consts(self) -> dict:
-		path = '/sbs/web/master'
+		path = '/web/master'
 		req_url = f'{self.__URL_API}{path}'
 
 		res_js = self.__req.post(
@@ -67,7 +64,7 @@ class API:
 		return res_js
 
 	def get_citylist_js_res_mobile(self) -> dict:
-		path = '/sbs/booking/citylist'
+		path = '/booking/citylist'
 		req_url = f'{self.__URL_API}{path}'
 
 		res_js = self.__req.post(
@@ -77,7 +74,7 @@ class API:
 		return res_js
 
 	def get_study_rooms_js_res_mobile(self, id_city: int) -> dict:
-		path = '/sbs/booking/halllist'
+		path = '/booking/halllist'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -91,7 +88,7 @@ class API:
 		return res_js
 
 	def get_study_rooms_js_res(self) -> dict:
-		path = '/sbs/web/halllist'
+		path = '/web/halllist'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -104,8 +101,23 @@ class API:
 
 		return res_js
 
-	def get_study_room_bookings_data_js_res(self, id_study_room: int, date: str) -> dict:
-		path = '/sbs/booking/bookingsperseats'
+	def get_study_room_bookings_data_js_res(self, study_room: str, id_study_room: int, date: str) -> dict:
+		path = '/web/student/seats'
+		req_url = f'{self.__URL_API}{path}'
+
+		data = {
+			'date': date,
+			'hall': f'{study_room} ({id_study_room})'
+		}
+
+		res_js = self.__req.post(
+			req_url, data = data
+		).json()
+
+		return res_js
+
+	def get_study_room_bookings_data_js_res_mobile(self, id_study_room: int, date: str) -> dict:
+		path = '/booking/bookingsperseats'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -127,7 +139,7 @@ class API:
 		end_time: str,
 		id_seat: int
 	) -> dict:
-		path = '/sbs/booking/custombooking'
+		path = '/booking/custombooking'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -145,7 +157,7 @@ class API:
 		return res_js
 
 	def get_time_slots_js_res(self, study_room: str, id_study_room: int, date: str) -> dict:
-		path = '/sbs/web/studentslots'
+		path = '/web/studentslots'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -167,7 +179,7 @@ class API:
 		time_start: str,
 		time_end: str
 	) -> dict:
-		path = '/sbs/web/studentseatbook'
+		path = '/web/studentseatbook'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -184,7 +196,7 @@ class API:
 		return res_js
 
 	def get_booking_list_js_res_mobile(self) -> dict:
-		path = '/sbs/booking/bookinglist'
+		path = '/booking/bookinglist'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {} # DON'T ASK ME WHY IT NEEDS AN EMPTY JSON
@@ -196,7 +208,7 @@ class API:
 		return res_js
 
 	def get_user_info_js_res(self) -> dict:
-		path = '/sbs/web/me'
+		path = '/web/me'
 		req_url = f'{self.__URL_API}{path}'
 
 		res_js = self.__req.post(
@@ -206,7 +218,7 @@ class API:
 		return res_js
 
 	def book_cancel_js_res_mobile(self, id_booking: int) -> dict:
-		path = '/sbs/booking/bookingcancel'
+		path = '/booking/bookingcancel'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {
@@ -220,7 +232,7 @@ class API:
 		return res_js
 
 	def book_cancel_js_res(self, id_booking: int) -> dict:
-		path = '/sbs/web/bookingcancel'
+		path = '/web/bookingcancel'
 		req_url = f'{self.__URL_API}{path}'
 
 		data = {

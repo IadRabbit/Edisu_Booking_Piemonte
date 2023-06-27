@@ -128,6 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-settings.py
+
 edisu_booking_piemonte_bot.log
 edisu_booking_piemonte_bot.db
+creds.py

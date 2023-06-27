@@ -1,21 +1,41 @@
 from pprint import pp
-from edisu_api import API_SLIM
+from edisu_api import API_SLIM, exceptions
 from datetime import datetime, timedelta
 
-email = 'email'
-passw = 'pass'
-today_date = datetime.today().strftime('%d-%m-%Y')
+from creds import email, passw
+
+today_date = (datetime.today()+ timedelta(days=1)).strftime('%d-%m-%Y')
 
 api_edisu = API_SLIM()
 
-api_edisu.login(
-	email = email,
-	password = passw
-)
+try:
+	api_edisu.login(
+		email = email,
+		password = passw
+	)
+except exceptions.CannotLogin as e:
+	print(e.res_js, e.msg)
 
-#pp(api_edisu.get_study_room_booking_data_choices(1, today_date, '19:00', '00:00')[:40])
+def test_login_res():
+	res = api_edisu.login_js_res(email, passw)
+	print(res)
+
+
+def test_study_rooms_res():
+	#res = api_edisu.get_time_slots_js_res('MICHELANGELO', 1, today_date)
+	#res = api_edisu.get_time_slots_js_res('MICHELANGELO', 1, today_date)
+	#res = api_edisu.set_any_student_seat(today_date, 'MICHELANGELO', 2, '12:00', '12:30')
+	#res = api_edisu.login_js_res_api_mobile(email, passw)
+	res = api_edisu.book_cancel_js_res_mobile(1070793)
+	pp(res)
+
+#test_login_res()
+test_study_rooms_res()
+
+#pp(api_edisu.get_booking_list())
+exit()
 #api_edisu.book_cancel_js_res(api_edisu.get_last_booking()['id'])
-last_book = api_edisu.set_custom_booking_data_js_res_mobile(1, today_date, '02:30', '08:30', 40)
+last_book = api_edisu.pick_random_seat(1, today_date, '09:30', '10:30')
 print(last_book)
 exit()
 last_book = api_edisu.get_consts()

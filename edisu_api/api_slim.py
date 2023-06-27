@@ -108,7 +108,7 @@ class API_SLIM(API):
 		return booking
 
 	def get_study_room_bookings_data(self, id_study_room: int, date: str) -> dict:
-		js_res = self.get_study_room_bookings_data_js_res(
+		js_res = self.get_study_room_bookings_data_js_res_mobile(
 			id_study_room, date
 		)
 
